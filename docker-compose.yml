@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-diet_planner_db}
+      POSTGRES_USER: ${POSTGRES_USER:-diet_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-diet_secure_password_2026}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-diet_user} -d ${POSTGRES_DB:-diet_planner_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-diet_user}:${POSTGRES_PASSWORD:-diet_secure_password_2026}@db:5432/${POSTGRES_DB:-diet_planner_db}
+      SECRET_KEY: ${SECRET_KEY:-diet_production_secret_key_change_me_in_prod_2026}
+      FLASK_ENV: production
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-gemini-1.5-flash}
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploads_data:/app/uploads
+      - instance_data:/app/instance
+
+volumes:
+  postgres_data:
+  uploads_data:
+  instance_data:
