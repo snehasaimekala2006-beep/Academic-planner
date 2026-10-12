@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Student Login - Dhanekula Institute of Engineering and Technology{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card card-diet p-4 p-md-5 stat-card">
+                <div class="text-center mb-4">
+                    <i class="bi bi-mortarboard-fill display-4 text-primary"></i>
+                    <h3 class="fw-bold mt-2 text-dark">Student Portal</h3>
+                    <p class="text-muted small">Sign in with Roll Number or Username</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.login_student') }}">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Roll Number or Username</label>
+                        {{ form.username(class="form-control form-control-lg", placeholder="e.g. 218T1A0501 or 21diet0501") }}
+                        {% for error in form.username.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Password</label>
+                        {{ form.password(class="form-control form-control-lg", placeholder="Enter your password") }}
+                        {% for error in form.password.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        {{ form.remember_me(class="form-check-input") }}
+                        <label class="form-check-label text-muted small" for="remember_me">Remember Me</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">Sign In as Student</button>
+                </form>
+
+                <div class="mt-4 pt-3 border-top text-center">
+                    <p class="small text-muted mb-0">New student? <a href="{{ url_for('auth.register_student') }}" class="text-primary fw-bold text-decoration-none"><i class="bi bi-person-plus-fill me-1"></i>Register here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

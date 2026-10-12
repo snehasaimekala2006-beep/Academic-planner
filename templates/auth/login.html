@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In - Dhanekula Institute of Engineering and Technology{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card card-diet p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <i class="bi bi-shield-lock-fill display-4 text-primary"></i>
+                    <h3 class="fw-bold mt-2 text-dark">Portal Sign In</h3>
+                    <p class="text-muted small">Access your official DIET Academic account</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.login_redirect') }}">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark">{{ form.username.label.text }}</label>
+                        {{ form.username(class="form-control form-control-lg", placeholder="Enter username, roll no, or emp ID") }}
+                        {% for error in form.username.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark">{{ form.password.label.text }}</label>
+                        {{ form.password(class="form-control form-control-lg", placeholder="Enter your password") }}
+                        {% for error in form.password.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        {{ form.remember_me(class="form-check-input") }}
+                        <label class="form-check-label text-muted small" for="remember_me">{{ form.remember_me.label.text }}</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">Sign In to DIET Portal</button>
+                </form>
+
+                <div class="mt-3 text-center">
+                    <p class="small text-muted mb-0">New to DIET? <a href="{{ url_for('auth.register') }}" class="text-primary fw-bold text-decoration-none"><i class="bi bi-person-plus-fill me-1"></i>Register an Account</a></p>
+                </div>
+
+                <div class="mt-4 pt-3 border-top text-center">
+                    <p class="small text-muted mb-2">Direct Role Access:</p>
+                    <div class="btn-group btn-group-sm w-100 flex-wrap">
+                        <a href="{{ url_for('auth.login_student') }}" class="btn btn-outline-secondary">Student</a>
+                        <a href="{{ url_for('auth.login_faculty') }}" class="btn btn-outline-secondary">Faculty</a>
+                        <a href="{{ url_for('auth.login_hod') }}" class="btn btn-outline-secondary">HOD</a>
+                        <a href="{{ url_for('auth.login_principal') }}" class="btn btn-outline-secondary">Principal</a>
+                        <a href="{{ url_for('auth.login_admin') }}" class="btn btn-outline-secondary">Admin</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

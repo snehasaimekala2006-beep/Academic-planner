@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - DIET System Control{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Admin Header Banner -->
+    <div class="card card-diet p-4 mb-4" style="border-left: 5px solid #DC2626 !important;">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-danger mb-2 px-3 py-1">SYSTEM ADMINISTRATOR</span>
+                <h3 class="fw-bold text-dark mb-1">DIET Academic Planning Administration</h3>
+                <p class="text-muted small mb-0">
+                    Configuration, user credentials, official syllabus validation, conflict-free timetables, and security audit logs.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a href="{{ url_for('syllabus.upload') }}" class="btn btn-primary btn-sm me-2">
+                    <i class="bi bi-upload me-1"></i> Upload Syllabus PDF
+                </a>
+                <a href="{{ url_for('admin.create_user') }}" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-person-plus me-1"></i> Create User
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card card-diet p-3 stat-card">
+                <small class="text-muted text-uppercase fw-semibold">Total Users</small>
+                <h3 class="fw-bold text-dark mt-1 mb-0">{{ total_users }}</h3>
+                <small class="text-muted">{{ active_users }} Active Accounts</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-diet p-3 stat-card-gold">
+                <small class="text-muted text-uppercase fw-semibold">Pending Syllabus Imports</small>
+                <h3 class="fw-bold text-warning mt-1 mb-0">{{ pending_imports }}</h3>
+                <small class="text-muted">Requires admin validation</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-diet p-3 stat-card-navy">
+                <small class="text-muted text-uppercase fw-semibold">Branches & Subjects</small>
+                <h3 class="fw-bold text-dark mt-1 mb-0">{{ total_branches }} / {{ total_subjects }}</h3>
+                <small class="text-muted">Curriculum mapped</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-diet p-3 stat-card-green">
+                <small class="text-muted text-uppercase fw-semibold">System Health</small>
+                <h3 class="fw-bold text-success mt-1 mb-0">OPERATIONAL</h3>
+                <small class="text-muted">Flask 3.1 & SQLAlchemy 2.0</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Quick Admin Navigation -->
+        <div class="col-lg-5">
+            <div class="card card-diet h-100">
+                <div class="card-header card-header-diet">
+                    <span class="fw-bold"><i class="bi bi-sliders me-2"></i> Management Portals</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a href="{{ url_for('admin.users_list') }}" class="btn btn-outline-primary text-start p-3">
+                            <div class="fw-bold"><i class="bi bi-people-fill me-2"></i> User Role Management</div>
+                            <small class="text-muted">Create, edit, reset passwords, or disable accounts</small>
+                        </a>
+                        <a href="{{ url_for('syllabus.upload') }}" class="btn btn-outline-info text-start p-3 text-dark">
+                            <div class="fw-bold"><i class="bi bi-file-earmark-pdf-fill me-2"></i> Official Syllabus Importer & Validator</div>
+                            <small class="text-muted">Upload JNTUK curriculum PDFs, SHA-256 validation & activation</small>
+                        </a>
+                        <a href="{{ url_for('admin.timetable_manager') }}" class="btn btn-outline-warning text-start p-3 text-dark">
+                            <div class="fw-bold"><i class="bi bi-table me-2"></i> Conflict-Checked Timetable Scheduler</div>
+                            <small class="text-muted">Detects & prevents room, faculty, and section double-bookings</small>
+                        </a>
+                        <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-outline-secondary text-start p-3">
+                            <div class="fw-bold"><i class="bi bi-journal-text me-2"></i> Security Audit Logs</div>
+                            <small class="text-muted">Review authentication attempts, RBAC violations & IDOR triggers</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Audit Events -->
+        <div class="col-lg-7">
+            <div class="card card-diet h-100">
+                <div class="card-header card-header-diet d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-shield-check me-2"></i> Recent Security Audit Trail</span>
+                    <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-sm btn-outline-secondary">View All Logs</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Action</th>
+                                    <th>User</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in recent_logs %}
+                                <tr>
+                                    <td class="text-muted">{{ log.timestamp.strftime('%d %b %H:%M:%S') }}</td>
+                                    <td class="fw-semibold">{{ log.action }}</td>
+                                    <td>{{ log.user.username if log.user else 'Anonymous' }}</td>
+                                    <td>
+                                        {% if log.status == 'SUCCESS' %}
+                                            <span class="badge bg-success">SUCCESS</span>
+                                        {% elif log.status == 'DENIED' %}
+                                            <span class="badge bg-danger">DENIED</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">{{ log.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-3">No audit logs recorded yet.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

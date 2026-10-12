@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Timetable Manager - DIET Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a></li>
+            <li class="breadcrumb-item active">Timetable Manager</li>
+        </ol>
+    </nav>
+
+    <div class="card card-diet p-4 mb-4">
+        <h3 class="fw-bold text-dark mb-1">Institutional Timetable & Conflict Detection Manager</h3>
+        <p class="text-muted small mb-0">Automatic multi-dimensional constraint validation across faculty, classrooms, and sections</p>
+    </div>
+
+    <!-- Add Timetable Slot Form -->
+    <div class="card card-diet p-4 mb-4">
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-calendar-plus-fill text-primary me-2"></i> Schedule Class Period Slot</h5>
+        <form method="POST" action="{{ url_for('admin.timetable_manager') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Target Section</label>
+                    <select name="section_id" class="form-select form-select-sm" required>
+                        {% for sec in sections %}
+                            <option value="{{ sec.id }}">{{ sec.branch.code }} Sem-{{ sec.semester.semester_number }} Sec {{ sec.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Subject</label>
+                    <select name="subject_id" class="form-select form-select-sm" required>
+                        {% for s in subjects %}
+                            <option value="{{ s.id }}">{{ s.code }} - {{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Faculty Assigned</label>
+                    <select name="faculty_id" class="form-select form-select-sm" required>
+                        {% for f in faculty_list %}
+                            <option value="{{ f.id }}">{{ f.user.full_name }} ({{ f.employee_id }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">Classroom / Laboratory</label>
+                    <select name="classroom_id" class="form-select form-select-sm" required>
+                        {% for rm in classrooms %}
+                            <option value="{{ rm.id }}">{{ rm.room_number }} ({{ rm.room_type }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Day of Week</label>
+                    <select name="day_of_week" class="form-select form-select-sm" required>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Period Number (1 - 8)</label>
+                    <select name="period_number" class="form-select form-select-sm" required>
+                        {% for p in range(1, 9) %}
+                            <option value="{{ p }}">Period {{ p }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">Academic Session</label>
+                    <input type="text" name="academic_session" class="form-control form-control-sm" value="2026-2027" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary fw-bold">
+                <i class="bi bi-check-circle me-1"></i> Check Conflicts & Assign Slot
+            </button>
+        </form>
+    </div>
+
+    <!-- Existing Timetable Slots Table -->
+    <div class="card card-diet">
+        <div class="card-header card-header-diet">
+            <span class="fw-bold"><i class="bi bi-table me-2"></i> All Scheduled Period Slots</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Day</th>
+                            <th>Period</th>
+                            <th>Section</th>
+                            <th>Subject</th>
+                            <th>Faculty</th>
+                            <th>Room</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for e in entries %}
+                        <tr>
+                            <td class="fw-bold">{{ e.day_of_week }}</td>
+                            <td><span class="badge bg-light text-dark border">Period {{ e.period_number }}</span></td>
+                            <td>{{ e.section.branch.code }} Sec {{ e.section.name }}</td>
+                            <td class="fw-semibold text-primary">{{ e.subject.name }} ({{ e.subject.code }})</td>
+                            <td>{{ e.faculty.user.full_name }}</td>
+                            <td><span class="badge bg-secondary">{{ e.classroom.room_number }}</span></td>
+                            <td>
+                                <form method="POST" action="{{ url_for('admin.delete_timetable_entry', entry_id=e.id) }}" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm('Remove this timetable slot?')">
+                                        Remove
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">No timetable entries scheduled.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

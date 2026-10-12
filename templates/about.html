@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}About - Dhanekula Institute of Engineering and Technology{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Home</a></li>
+            <li class="breadcrumb-item active">About Institution</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card card-diet p-4 mb-4">
+                <h3 class="fw-bold text-primary mb-3">{{ INSTITUTION_NAME }} ({{ INSTITUTION_ABBR }})</h3>
+                <p class="lead text-muted">
+                    Established in 2009 by Dhanekula Venkata Subbaiah Charitable Trust, DIET is dedicated to providing outcome-based technical education, research excellence, and disciplined character formation in Andhra Pradesh.
+                </p>
+                <hr>
+                <h5 class="fw-bold text-dark mb-2"><i class="bi bi-eye-fill text-warning me-2"></i> Institutional Vision</h5>
+                <p class="text-secondary">
+                    Pioneering engineering education with world-class infrastructure, high-caliber faculty, and industry-collaborative learning to produce globally competent, ethical, and socially conscious engineering professionals.
+                </p>
+
+                <h5 class="fw-bold text-dark mt-4 mb-2"><i class="bi bi-bullseye text-danger me-2"></i> Institutional Mission</h5>
+                <ul class="text-secondary">
+                    <li class="mb-2">To impart quality undergraduate and postgraduate technical education fostering innovative problem-solving.</li>
+                    <li class="mb-2">To maintain rigorous academic tracking and continuous student performance improvement via structured syllabus management.</li>
+                    <li class="mb-2">To cultivate ethical leadership, research aptitude, and lifelong learning capabilities.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card card-diet p-4">
+                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-patch-check-fill text-success me-2"></i> Institutional Accreditations</h5>
+                <ul class="list-unstyled small text-secondary">
+                    <li class="py-2 border-bottom"><b>Approved by:</b> AICTE, New Delhi</li>
+                    <li class="py-2 border-bottom"><b>Affiliated to:</b> JNTU Kakinada (JNTUK)</li>
+                    <li class="py-2 border-bottom"><b>Accreditation:</b> NAAC / NBA Accredited Programs</li>
+                    <li class="py-2 border-bottom"><b>Certification:</b> ISO 9001:2015</li>
+                    <li class="py-2"><b>Campus Area:</b> 10+ Acres Green Campus</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
